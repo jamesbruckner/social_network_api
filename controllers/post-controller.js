@@ -26,7 +26,7 @@ const PostController = {
 
     async createPost(req, res) {
         try {
-            const post = await Post.create(req.Body);
+            const post = await Post.create(req.body);
             res.status(201).json(post);
         } catch (error) {
             res.status(500).json(error);
@@ -36,7 +36,7 @@ const PostController = {
     async deletePost(req, res) {
         try {
             const post = await Post.findByIdAndDelete({_id:req.params.postId});
-            res.status(200).json(thought);
+            res.status(200).json(post);
         } catch (error) {
             res.status(500).json(error)
         }
@@ -47,7 +47,7 @@ const PostController = {
             const post = await Post.findByIdAndUpdate(req.params.postId, req.body, {
                 new: true,
             });
-            if (!thought) {
+            if (!post) {
                 res.status(404).json({ message: 'Post not found' });
             } else {
                 res.json(post);
@@ -60,7 +60,7 @@ const PostController = {
     async createReaction(req, res) {
         try {
             const post = await Post.findOneAndUpdate(
-                {_id:req.params.thoughtId},
+                {_id:req.params.postId},
                 {$addToSet: {reactions: req.body}},
                 {runValidators:true, new: true}
             );
@@ -73,11 +73,11 @@ const PostController = {
     async deleteReaction(req, res) {
         try {
             const post = await Post.findOneAndUpdate(
-                {_id: req.params.thoughtId},
+                {_id: req.params.postId},
                 {$pull: {reactions: {reactionId: req.params.reactionId}}},
                 {runValidators: true, new: true}
             );
-            thought ? res.json(thought) : res.status(404).json({message: notFound});
+            post ? res.json(post) : res.status(404).json({message: notFound});
         } catch (e) {
             res.status(500).json(e);
         }
